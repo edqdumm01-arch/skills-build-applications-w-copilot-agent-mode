@@ -1,10 +1,10 @@
 import express, { type Request, type Response } from 'express';
-import mongoose from 'mongoose';
 import { User } from './models/user';
 import { Team } from './models/team';
 import { Activity } from './models/activity';
 import { Leaderboard } from './models/leaderboard';
 import { Workout } from './models/workout';
+import { connectToDatabase } from './database';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
@@ -12,13 +12,8 @@ const codespaceName = process.env.CODESPACE_NAME;
 const baseUrl = codespaceName
   ? `https://${codespaceName}-8000.app.github.dev`
   : 'http://localhost:8000';
-const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/octofit_db';
 
 app.use(express.json());
-
-const connectToDatabase = async () => {
-  await mongoose.connect(mongoUri);
-};
 
 const sendResource = (res: Response, resource: string, data: unknown[]) => {
   res.json({

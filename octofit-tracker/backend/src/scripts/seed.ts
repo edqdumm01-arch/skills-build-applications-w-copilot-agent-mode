@@ -4,12 +4,11 @@ import { Team } from '../models/team';
 import { Activity } from '../models/activity';
 import { Leaderboard } from '../models/leaderboard';
 import { Workout } from '../models/workout';
+import { connectToDatabase } from '../database';
 
 // Seed the octofit_db database with test data
 const seedDatabase = async () => {
-  const mongoUri = 'mongodb://127.0.0.1:27017/octofit_db';
-
-  await mongoose.connect(mongoUri);
+  await connectToDatabase();
   console.log('Connected to MongoDB for seeding');
 
   await Promise.all([

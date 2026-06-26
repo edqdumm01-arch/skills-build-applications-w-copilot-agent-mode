@@ -4,6 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const user_1 = require("./models/user");
+const team_1 = require("./models/team");
+const activity_1 = require("./models/activity");
+const leaderboard_1 = require("./models/leaderboard");
+const workout_1 = require("./models/workout");
+const database_1 = require("./database");
 const app = (0, express_1.default)();
 const PORT = Number(process.env.PORT) || 8000;
 const codespaceName = process.env.CODESPACE_NAME;
@@ -21,35 +27,55 @@ const sendResource = (res, resource, data) => {
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', message: 'OctoFit Tracker backend is running', baseUrl });
 });
-app.get(['/api/users', '/api/users/'], (_req, res) => {
-    sendResource(res, 'users', [
-        { id: 1, name: 'Ava', email: 'ava@example.com' },
-        { id: 2, name: 'Noah', email: 'noah@example.com' },
-    ]);
+app.get(['/api/users', '/api/users/'], async (_req, res) => {
+    try {
+        await (0, database_1.connectToDatabase)();
+        const users = await user_1.User.find({}).lean();
+        sendResource(res, 'users', users);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch users', details: error });
+    }
 });
-app.get(['/api/teams', '/api/teams/'], (_req, res) => {
-    sendResource(res, 'teams', [
-        { id: 1, name: 'Rocket Runners', members: 5 },
-        { id: 2, name: 'Peak Performers', members: 4 },
-    ]);
+app.get(['/api/teams', '/api/teams/'], async (_req, res) => {
+    try {
+        await (0, database_1.connectToDatabase)();
+        const teams = await team_1.Team.find({}).lean();
+        sendResource(res, 'teams', teams);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch teams', details: error });
+    }
 });
-app.get(['/api/activities', '/api/activities/'], (_req, res) => {
-    sendResource(res, 'activities', [
-        { id: 1, type: 'Run', duration: '30m' },
-        { id: 2, type: 'Cycling', duration: '45m' },
-    ]);
+app.get(['/api/activities', '/api/activities/'], async (_req, res) => {
+    try {
+        await (0, database_1.connectToDatabase)();
+        const activities = await activity_1.Activity.find({}).lean();
+        sendResource(res, 'activities', activities);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch activities', details: error });
+    }
 });
-app.get(['/api/leaderboard', '/api/leaderboard/'], (_req, res) => {
-    sendResource(res, 'leaderboard', [
-        { rank: 1, name: 'Ava', points: 1200 },
-        { rank: 2, name: 'Noah', points: 1100 },
-    ]);
+app.get(['/api/leaderboard', '/api/leaderboard/'], async (_req, res) => {
+    try {
+        await (0, database_1.connectToDatabase)();
+        const leaderboardEntries = await leaderboard_1.Leaderboard.find({}).lean();
+        sendResource(res, 'leaderboard', leaderboardEntries);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch leaderboard', details: error });
+    }
 });
-app.get(['/api/workouts', '/api/workouts/'], (_req, res) => {
-    sendResource(res, 'workouts', [
-        { id: 1, title: 'HIIT Cardio', difficulty: 'Intermediate' },
-        { id: 2, title: 'Strength Builder', difficulty: 'Beginner' },
-    ]);
+app.get(['/api/workouts', '/api/workouts/'], async (_req, res) => {
+    try {
+        await (0, database_1.connectToDatabase)();
+        const workouts = await workout_1.Workout.find({}).lean();
+        sendResource(res, 'workouts', workouts);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch workouts', details: error });
+    }
 });
 app.listen(PORT, () => {
     console.log(`Backend listening on port ${PORT}`);
