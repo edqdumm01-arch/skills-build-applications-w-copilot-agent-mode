@@ -16,6 +16,27 @@ const codespaceName = process.env.CODESPACE_NAME;
 const baseUrl = codespaceName
     ? `https://${codespaceName}-8000.app.github.dev`
     : 'http://localhost:8000';
+const allowOrigin = (origin) => {
+    if (!origin) {
+        return false;
+    }
+    return origin.startsWith('http://localhost:')
+        || origin.startsWith('http://127.0.0.1:')
+        || origin.includes('.app.github.dev');
+};
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (typeof origin === 'string' && allowOrigin(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(204);
+        return;
+    }
+    next();
+});
 app.use(express_1.default.json());
 const sendResource = (res, resource, data) => {
     res.json({
