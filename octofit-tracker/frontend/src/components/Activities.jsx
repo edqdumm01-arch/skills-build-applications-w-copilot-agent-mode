@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 
-const getApiBaseUrl = () => {
+const getApiUrl = () => {
   const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim();
-  return codespaceName ? `https://${codespaceName}-8000.app.github.dev` : 'http://localhost:8000';
+  const baseUrl = codespaceName
+    ? `https://${codespaceName}-8000.app.github.dev`
+    : 'http://localhost:8000';
+
+  return `${baseUrl}/api/activities/`;
 };
 
 const normalizeItems = (payload) => {
@@ -29,7 +33,7 @@ export default function Activities() {
   useEffect(() => {
     const loadActivities = async () => {
       try {
-        const response = await fetch(`${getApiBaseUrl()}/api/activities/`);
+        const response = await fetch(getApiUrl());
         if (!response.ok) throw new Error('Failed to fetch activities');
         const data = await response.json();
         setActivities(normalizeItems(data));

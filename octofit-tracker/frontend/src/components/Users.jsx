@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 
-const getApiBaseUrl = () => {
+const getApiUrl = () => {
   const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim();
-  return codespaceName ? `https://${codespaceName}-8000.app.github.dev` : 'http://localhost:8000';
+  const baseUrl = codespaceName
+    ? `https://${codespaceName}-8000.app.github.dev`
+    : 'http://localhost:8000';
+
+  return `${baseUrl}/api/users/`;
 };
 
 const normalizeItems = (payload) => {
@@ -29,7 +33,7 @@ export default function Users() {
   useEffect(() => {
     const loadUsers = async () => {
       try {
-        const response = await fetch(`${getApiBaseUrl()}/api/users/`);
+        const response = await fetch(getApiUrl());
         if (!response.ok) throw new Error('Failed to fetch users');
         const data = await response.json();
         setUsers(normalizeItems(data));
