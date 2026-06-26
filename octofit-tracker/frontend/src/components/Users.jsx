@@ -1,8 +1,25 @@
 import { useEffect, useState } from 'react';
 
 const getApiBaseUrl = () => {
-  const codespaceName = import.meta.env.VITE_CODESPACE_NAME;
+  const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim();
   return codespaceName ? `https://${codespaceName}-8000.app.github.dev` : 'http://localhost:8000';
+};
+
+const normalizeItems = (payload) => {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (payload && typeof payload === 'object') {
+    const candidates = [payload.data, payload.results, payload.items, payload.records, payload.content];
+    for (const candidate of candidates) {
+      if (Array.isArray(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  return [];
 };
 
 export default function Users() {
@@ -15,9 +32,9 @@ export default function Users() {
         const response = await fetch(`${getApiBaseUrl()}/api/users/`);
         if (!response.ok) throw new Error('Failed to fetch users');
         const data = await response.json();
-        setUsers(Array.isArray(data?.data) ? data.data : []);
+        setUsers(normalizeItems(data));
       } catch (err) {
-        setError(err.message);
+        setError(err instanceof Error ? err.message : 'Failed to fetch users');
       }
     };
 
