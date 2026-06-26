@@ -4,7 +4,7 @@ import { Team } from '../models/team';
 import { Activity } from '../models/activity';
 import { Leaderboard } from '../models/leaderboard';
 import { Workout } from '../models/workout';
-import { connectToDatabase } from '../database';
+import { connectToDatabase } from '../config/database';
 
 // Seed the octofit_db database with test data
 const seedDatabase = async () => {
